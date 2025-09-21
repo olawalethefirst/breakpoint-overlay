@@ -1,0 +1,43 @@
+{
+  "name": "breakpoint-overlay",
+  "version": "0.1.0",
+  "description": "Overlay utility for debugging responsive layouts in the browser",
+  "type": "module",
+  "private": false,
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.es.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.es.js",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "dev": "vite dev",
+    "build": "pnpm run typecheck && vite build",
+    "typecheck": "tsc -p tsconfig.build.json",
+    "preview": "vite preview"
+  },
+  "keywords": [
+    "breakpoints",
+    "overlay",
+    "responsive",
+    "debug"
+  ],
+  "author": {
+    "name": "Breakpoint Overlay Contributors"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "~5.8.3",
+    "vite": "^7.1.6"
+  }
+}
