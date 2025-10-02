@@ -134,8 +134,8 @@ export interface OverlayStore {
 export interface OverlayHandle {
   start(): void;
   stop(): void;
-  toggle(force?: boolean): void;
-  updateConfig(patch: Partial<OverlayConfig>): void;
+  toggle(): void;
+  updateConfig(patch: OverlayConfig): void;
   getState(): RuntimeState;
   subscribe(listener: StateListener): () => void;
 }
@@ -148,7 +148,7 @@ export interface OverlayContext {
   config: ResolvedOverlayConfig;
   store: OverlayStore;
   persist?: {
-    load(): { config?: Partial<OverlayConfig>; state?: Partial<RuntimeState> } | undefined;
+    load(): { config?: OverlayConfig; state?: RuntimeState } | undefined;
     save(config: ResolvedOverlayConfig, state: RuntimeState): void;
     clear(): void;
   };

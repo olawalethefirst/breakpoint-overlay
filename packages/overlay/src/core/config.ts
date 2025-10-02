@@ -25,7 +25,6 @@ const toNumber = (value: number, field: string, id: string): number => {
   return value;
 };
 
-// TODO: tesdetermineStrategy;
 const determineStrategy = (
   breakpoint: MinWidthBreakpoint | MaxWidthBreakpoint | RangeBreakpoint,
 ): BreakpointMatchStrategy => {
