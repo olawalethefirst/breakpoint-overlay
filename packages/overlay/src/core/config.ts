@@ -2,10 +2,8 @@ import {
   CONFIG_SCHEMA_VERSION,
   DEFAULT_DEBOUNCE_MS,
   DEFAULT_HOTKEY,
-  DEFAULT_OVERFLOW_ENABLED,
   DEFAULT_PERSIST_STATE,
   createDefaultBreakpoints,
-  createDefaultOverflowIgnore,
 } from './defaults';
 import type {
   BreakpointMatchStrategy,
@@ -96,17 +94,10 @@ export const normalizeOverlayConfig = (config?: OverlayConfig): ResolvedOverlayC
       ? normalizedInputs
       : createDefaultBreakpoints();
 
-  const ignoreSelectorsSource =
-    config?.overflow?.ignoreSelectors ?? createDefaultOverflowIgnore();
-
   return {
     schemaVersion: CONFIG_SCHEMA_VERSION,
     breakpoints: normalizedBreakpoints,
     hotkey: config?.hotkey ?? DEFAULT_HOTKEY,
-    overflow: {
-      enabled: config?.overflow?.enabled ?? DEFAULT_OVERFLOW_ENABLED,
-      ignoreSelectors: [...ignoreSelectorsSource],
-    },
     debounceMs: config?.debounceMs ?? DEFAULT_DEBOUNCE_MS,
     persistState: config?.persistState ?? DEFAULT_PERSIST_STATE,
   };

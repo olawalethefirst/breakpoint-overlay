@@ -38,10 +38,6 @@ type BreakpointsForStrategy<S extends BreakpointMatchStrategy> =
  */
 interface OverlayConfigBase {
   hotkey?: string;
-  overflow?: {
-    enabled?: boolean;
-    ignoreSelectors?: string[];
-  };
   debounceMs?: number;
   persistState?: boolean;
 }
@@ -84,10 +80,6 @@ export interface ResolvedOverlayConfig {
   schemaVersion: number;
   breakpoints: NormalizedBreakpoint[];
   hotkey: string;
-  overflow: {
-    enabled: boolean;
-    ignoreSelectors: string[];
-  };
   debounceMs: number;
   persistState: boolean;
 }
@@ -103,16 +95,10 @@ export interface BreakpointMatch {
   label: string;
 }
 
-export type OverflowAxis = "x" | "y" | "xy";
-
-export interface OverflowEntry {
-  element: Element;
-  axis: OverflowAxis;
-}
-
 export interface BadgeUiState {
   expanded: boolean;
 }
+
 /**
  * Runtime overlay state: only values that change as the overlay runs.
  */
@@ -120,7 +106,6 @@ export interface RuntimeState {
   active: boolean;
   viewport: ViewportSnapshot;
   breakpoint: BreakpointMatch | null;
-  overflow: OverflowEntry[];
   badge: BadgeUiState;
   timestamp: number;
 }

@@ -1,11 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { normalizeOverlayConfig } from './config';
-import {
-  DEFAULT_DEBOUNCE_MS,
-  DEFAULT_HOTKEY,
-  DEFAULT_OVERFLOW_ENABLED,
-} from './defaults';
+import { DEFAULT_DEBOUNCE_MS, DEFAULT_HOTKEY } from './defaults';
 import type { OverlayConfig } from './types';
 
 describe('normalizeOverlayConfig', () => {
@@ -16,8 +12,6 @@ describe('normalizeOverlayConfig', () => {
     expect(result.hotkey).toBe(DEFAULT_HOTKEY);
     expect(result.debounceMs).toBe(DEFAULT_DEBOUNCE_MS);
     expect(result.persistState).toBe(false);
-    expect(result.overflow.enabled).toBe(DEFAULT_OVERFLOW_ENABLED);
-    expect(result.overflow.ignoreSelectors).toEqual([]);
   });
 
   it('normalizes breakpoints while preserving author order', () => {
@@ -79,19 +73,4 @@ describe('normalizeOverlayConfig', () => {
     expect(() => normalizeOverlayConfig(config)).toThrow();
   });
 
-  it('clones overflow ignore selectors to avoid shared references', () => {
-    const ignoreSelectors = ['.debug-pane'];
-    const config: OverlayConfig = {
-      overflow: {
-        ignoreSelectors,
-      },
-    };
-
-    const result = normalizeOverlayConfig(config);
-
-    expect(result.overflow.ignoreSelectors).toEqual(ignoreSelectors);
-
-    ignoreSelectors.push('.new-selector');
-    expect(result.overflow.ignoreSelectors).toEqual(['.debug-pane']);
-  });
 });
