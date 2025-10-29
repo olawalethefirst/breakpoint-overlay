@@ -9,6 +9,9 @@ const createDefaultRuntimeState = (): RuntimeState => ({
   },
   breakpoint: null,
   overflow: [],
+  badge: {
+    expanded: false,
+  },
   timestamp: Date.now(),
 });
 

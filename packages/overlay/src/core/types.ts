@@ -110,6 +110,9 @@ export interface OverflowEntry {
   axis: OverflowAxis;
 }
 
+export interface BadgeUiState {
+  expanded: boolean;
+}
 /**
  * Runtime overlay state: only values that change as the overlay runs.
  */
@@ -118,6 +121,7 @@ export interface RuntimeState {
   viewport: ViewportSnapshot;
   breakpoint: BreakpointMatch | null;
   overflow: OverflowEntry[];
+  badge: BadgeUiState;
   timestamp: number;
 }
 
