@@ -8,7 +8,6 @@ const createDefaultRuntimeState = (): RuntimeState => ({
     devicePixelRatio: 1,
   },
   breakpoint: null,
-  overflow: [],
   badge: {
     expanded: false,
   },
