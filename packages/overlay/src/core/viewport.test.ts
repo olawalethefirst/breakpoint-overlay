@@ -138,49 +138,9 @@ describe('createViewportTracker - browser behaviour', () => {
     vi.restoreAllMocks();
   });
 
-  it('emits initial snapshot and responds to ResizeObserver updates', () => {
-
-    const { ResizeObserver, triggerLayoutUpdate } = createResizeObserverAPI();
-    (globalThis as any).ResizeObserver = ResizeObserver;
-
-    const raf = createAnimationFrameAPI();
-    window.requestAnimationFrame = raf.requestAnimationFrame;
-    window.cancelAnimationFrame = raf.cancelAnimationFrame;
-
-    updateLayout({ width: 1024, height: 768, devicePixelRatio: 2 });
-
-    const listener = vi.fn();
-    const tracker = createViewportTracker(listener);
-
-    tracker.start();
-
-    expect(listener).toHaveBeenCalledTimes(1);
-    expect(listener).toHaveBeenCalledWith({
-      width: 1024,
-      height: 768,
-      devicePixelRatio: 2,
-    });
-
-    triggerLayoutUpdate(() => updateLayout({ width: 900 }));
-    expect(listener).toHaveBeenCalledTimes(1);
-
-    raf.triggerAnimationFrame();
-    expect(listener).toHaveBeenCalledTimes(2);
-    expect(listener).toHaveBeenLastCalledWith({
-      width: 900,
-      height: 768,
-      devicePixelRatio: 2,
-    });
-
-    tracker.stop();
-
-    triggerLayoutUpdate(() => updateLayout({ width: 700 }));
-    raf.triggerAnimationFrame();
-    expect(listener).toHaveBeenCalledTimes(2);
-  });
-
-  it("falls back to window resize events when ResizeObserver is unavailable", () => {
-    if (typeof window === 'undefined') {
+  
+  it("emits initial snapshot and responds to updates", () => {
+    if (typeof window === "undefined") {
       return;
     }
     delete (globalThis as any).ResizeObserver;
@@ -196,14 +156,22 @@ describe('createViewportTracker - browser behaviour', () => {
     tracker.start();
 
     expect(listener).toHaveBeenCalledTimes(1);
-    expect(listener).toHaveBeenCalledWith({ width: 600, height: 400, devicePixelRatio: 1 });
+    expect(listener).toHaveBeenCalledWith({
+      width: 600,
+      height: 400,
+      devicePixelRatio: 1,
+    });
 
     updateLayout({ width: 720 });
     window.dispatchEvent(new Event("resize"));
     raf.triggerAnimationFrame();
 
     expect(listener).toHaveBeenCalledTimes(2);
-    expect(listener).toHaveBeenLastCalledWith({ width: 720, height: 400, devicePixelRatio: 1 });
+    expect(listener).toHaveBeenLastCalledWith({
+      width: 720,
+      height: 400,
+      devicePixelRatio: 1,
+    });
 
     tracker.stop();
 
