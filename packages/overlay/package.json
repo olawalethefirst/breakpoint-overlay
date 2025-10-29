@@ -21,8 +21,9 @@
   },
   "scripts": {
     "dev": "vite dev",
-    "build": "pnpm run typecheck && vite build",
-    "typecheck": "tsc -p tsconfig.build.json",
+    "build": "pnpm run typecheck && vite build && pnpm run types",
+    "typecheck": "tsc --noEmit",
+    "types": "tsc -p tsconfig.build.json",
     "preview": "vite preview",
     "test": "vitest"
   },
