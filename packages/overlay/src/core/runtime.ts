@@ -1,6 +1,7 @@
 import { resolveBreakpoint } from './breakpoints';
 import { normalizeOverlayConfig } from './config';
 import { createStore } from './state';
+import { BadgeContainer } from '../ui/badge-container';
 import type { ViewportTrackerFactory } from './viewport';
 import { createViewportTracker } from './viewport';
 import type {
@@ -16,6 +17,7 @@ interface RuntimeController {
   store: OverlayStore;
   context: OverlayContext;
   viewportTracker: ReturnType<ViewportTrackerFactory> | null;
+  badgeContainer: BadgeContainer;
   start(): void;
   stop(): void;
   updateConfig(config: OverlayConfig): void;
@@ -47,6 +49,7 @@ export const createRuntimeController = (
   };
 
   let viewportTracker: ReturnType<ViewportTrackerFactory> | null = null;
+  const badgeContainer = new BadgeContainer(context);
 
   const ensureViewportTracker = () => {
     if (viewportTracker) return viewportTracker;
@@ -67,7 +70,18 @@ export const createRuntimeController = (
   };
 
   const stop = () => {
-    store.setState((prev) => (prev.active ? { ...prev, active: false } : prev));
+    store.setState((prev) =>
+      prev.active
+        ? {
+            ...prev,
+            active: false,
+            badge: {
+              ...prev.badge,
+              expanded: false,
+            },
+          }
+        : prev,
+    );
 
     if (viewportTracker) {
       viewportTracker.stop();
@@ -77,6 +91,7 @@ export const createRuntimeController = (
   const updateConfig = (patch: OverlayConfig) => {
     const nextConfig = normalizeOverlayConfig(patch);
     context.config = nextConfig;
+    badgeContainer.updateConfig(nextConfig);
 
     const snapshot = viewportTracker?.getSnapshot();
     if (snapshot) {
@@ -88,6 +103,7 @@ export const createRuntimeController = (
     store,
     context,
     viewportTracker,
+    badgeContainer,
     start,
     stop,
     updateConfig,
