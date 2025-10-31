@@ -39,7 +39,6 @@ type BreakpointsForStrategy<S extends BreakpointMatchStrategy> =
 interface OverlayConfigBase {
   hotkey?: string;
   debounceMs?: number;
-  persistState?: boolean;
 }
 
 export type OverlayConfig =
@@ -81,7 +80,6 @@ export interface ResolvedOverlayConfig {
   breakpoints: NormalizedBreakpoint[];
   hotkey: string;
   debounceMs: number;
-  persistState: boolean;
 }
 
 export interface ViewportSnapshot {

@@ -99,6 +99,5 @@ export const normalizeOverlayConfig = (config?: OverlayConfig): ResolvedOverlayC
     breakpoints: normalizedBreakpoints,
     hotkey: config?.hotkey ?? DEFAULT_HOTKEY,
     debounceMs: config?.debounceMs ?? DEFAULT_DEBOUNCE_MS,
-    persistState: config?.persistState ?? DEFAULT_PERSIST_STATE,
   };
 };
