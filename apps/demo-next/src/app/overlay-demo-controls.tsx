@@ -1,16 +1,25 @@
-'use client';
+"use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { OverlayHandle, RuntimeState } from 'breakpoint-overlay';
-import { initOverlay } from 'breakpoint-overlay';
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { OverlayHandle, RuntimeState } from "breakpoint-overlay";
+import { initOverlay } from "breakpoint-overlay";
 
-const DEMO_CONFIG = {
-  breakpoints: [
-    { id: 'mobile', label: 'Mobile', maxWidth: 767 },
-    { id: 'tablet', label: 'Tablet', minWidth: 768, maxWidth: 1199 },
-    { id: 'desktop', label: 'Desktop', minWidth: 1200 },
-  ],
-};
+const configs = [
+  {
+    breakpoints: [
+      { id: "mobile", label: "Mobile", maxWidth: 767 },
+      { id: "tablet", label: "Tablet", minWidth: 768, maxWidth: 1199 },
+      { id: "desktop", label: "Desktop", minWidth: 1200 },
+    ],
+  },
+  {
+    breakpoints: [
+      { id: "mb", label: "Mobile", maxWidth: 441 },
+      { id: "tablet", label: "Tablet", minWidth: 442, },
+      { id: "desktop", label: "Desktop", minWidth: 1000 },
+    ],
+  },
+];
 
 const placeholderState: RuntimeState = {
   active: false,
@@ -21,20 +30,23 @@ const placeholderState: RuntimeState = {
 };
 
 export function OverlayDemoControls() {
+  const mounted = useRef(false);
   const overlayRef = useRef<OverlayHandle | null>(null);
   const unsubscribeRef = useRef<(() => void) | null>(null);
-  const [overlayState, setOverlayState] = useState<RuntimeState>(placeholderState);
+  const [overlayState, setOverlayState] =
+    useState<RuntimeState>(placeholderState);
+  const [config, setConfig] = useState(0);
 
   const ensureOverlay = useCallback(() => {
     if (!overlayRef.current) {
-      const handle = initOverlay(DEMO_CONFIG);
+      const handle = initOverlay(configs[config]);
       overlayRef.current = handle;
       unsubscribeRef.current = handle.subscribe((state) => {
         setOverlayState(state);
       });
     }
     return overlayRef.current;
-  }, []);
+  }, [config]);
 
   const toggleOverlay = useCallback(() => {
     const overlay = ensureOverlay();
@@ -42,22 +54,25 @@ export function OverlayDemoControls() {
     overlay.toggle();
   }, [ensureOverlay]);
 
-  useEffect(
-    () => {
-      return () => {
-        unsubscribeRef.current?.();
-        unsubscribeRef.current = null;
-        overlayRef.current?.stop();
-        overlayRef.current = null;
-      };
-    },
-    [],
-  );
+  useEffect(() => {
+    return () => {
+      unsubscribeRef.current?.();
+      unsubscribeRef.current = null;
+      overlayRef.current?.stop();
+      overlayRef.current = null;
+    };
+  }, []);
+  useEffect(() => {
+    if (mounted.current) {
+      overlayRef.current?.updateConfig(configs[config]);
+    }
+    mounted.current = true;
+  }, [config]);
 
-  const breakpointLabel = overlayState.breakpoint?.label ?? '–';
+  const breakpointLabel = overlayState.breakpoint?.label ?? "–";
   const viewportSummary = useMemo(() => {
     const { width, height } = overlayState.viewport;
-    if (width === 0 && height === 0) return 'Waiting for viewport…';
+    if (width === 0 && height === 0) return "Waiting for viewport…";
     return `${Math.round(width)} × ${Math.round(height)}`;
   }, [overlayState.viewport]);
 
@@ -65,20 +80,27 @@ export function OverlayDemoControls() {
 
   return (
     <section className="w-full max-w-xl rounded-2xl border border-zinc-800/60 bg-zinc-900/40 p-6 text-zinc-100 shadow-lg backdrop-blur">
-      <header className="mb-4 flex items-center justify-between gap-4">
+      <header className="mb-4 flex items-center justify-between gap-4 flex-wrap">
         <div>
           <h2 className="text-lg font-semibold">Breakpoint Overlay</h2>
           <p className="text-sm text-zinc-400">
-            Toggle the overlay badge and verify the active breakpoint readout during manual
-            testing.
+            Toggle the overlay badge and verify the active breakpoint readout
+            during manual testing.
           </p>
         </div>
         <button
           type="button"
           onClick={toggleOverlay}
-          className="rounded-full bg-emerald-500 px-4 py-2 text-sm font-semibold text-emerald-950 shadow hover:bg-emerald-400"
+          className="rounded-full bg-emerald-500 border-[1] border-emerald-500 px-4 py-2 text-sm font-semibold text-emerald-950 shadow hover:bg-emerald-400"
         >
-          {overlayState.active ? 'Stop overlay' : 'Start overlay'}
+          Toggle Overlay
+        </button>
+        <button
+          type="button"
+          onClick={() => setConfig((config) => (config + 1) % 2)}
+          className="rounded-full border-[1] border-emerald-500  text-emerald-500 px-4 py-2 text-sm font-semibold  shadow hover:border-emerald-400 hover:text-emerald-400"
+        >
+          Toggle Config
         </button>
       </header>
 
@@ -90,7 +112,7 @@ export function OverlayDemoControls() {
           <dl className="mt-2 grid grid-cols-2 gap-y-2 text-sm">
             <dt className="text-zinc-500">Active</dt>
             <dd className="font-medium text-zinc-200">
-              {overlayState.active ? 'Yes' : 'No'}
+              {overlayState.active ? "Yes" : "No"}
             </dd>
             <dt className="text-zinc-500">Breakpoint</dt>
             <dd className="font-medium text-zinc-200">{breakpointLabel}</dd>
@@ -106,8 +128,8 @@ export function OverlayDemoControls() {
             Demo Breakpoints
           </h3>
           <ul className="mt-2 space-y-1 text-sm text-zinc-300">
-            {DEMO_CONFIG.breakpoints.map((bp) => {
-              let range = 'All widths';
+            {configs[config].breakpoints.map((bp) => {
+              let range = "All widths";
               if (bp.minWidth != null && bp.maxWidth != null) {
                 range = `${bp.minWidth}px – ${bp.maxWidth}px`;
               } else if (bp.minWidth != null) {
@@ -118,7 +140,12 @@ export function OverlayDemoControls() {
 
               const isActive = overlayState.breakpoint?.id === bp.id;
               return (
-                <li key={bp.id} className={isActive ? 'font-semibold text-emerald-400' : undefined}>
+                <li
+                  key={bp.id}
+                  className={
+                    isActive ? "font-semibold text-emerald-400" : undefined
+                  }
+                >
                   {bp.label} · <span className="text-zinc-500">{range}</span>
                 </li>
               );
@@ -129,7 +156,8 @@ export function OverlayDemoControls() {
 
       {overlayState.active && (
         <p className="mt-4 text-xs text-zinc-500">
-          Hint: resize the viewport or use the device toolbar to see the badge update in real time.
+          Hint: resize the viewport or use the device toolbar to see the badge
+          update in real time.
         </p>
       )}
     </section>
