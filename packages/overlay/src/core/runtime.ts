@@ -1,5 +1,6 @@
 import { resolveBreakpoint } from './breakpoints';
 import { normalizeOverlayConfig } from './config';
+import { parseHotkey, matchesHotkey } from './hotkey';
 import { createStore } from './state';
 import { BadgeContainer } from '../ui/badge-container';
 import type { ViewportTrackerFactory } from './viewport';
@@ -20,6 +21,7 @@ interface RuntimeController {
   badgeContainer: BadgeContainer;
   start(): void;
   stop(): void;
+  toggle(): void;
   updateConfig(config: OverlayConfig): void;
 }
 
@@ -50,6 +52,21 @@ export const createRuntimeController = (
 
   let viewportTracker: ReturnType<ViewportTrackerFactory> | null = null;
   const badgeContainer = new BadgeContainer(context);
+  let hotkeyBinding = parseHotkey(resolvedConfig.hotkey);
+  let removeHotkeyListener: (() => void) | null = null;
+
+  const isEditableTarget = (target: EventTarget | null): boolean => {
+    if (!(target instanceof HTMLElement)) {
+      return false;
+    }
+
+    if (target.isContentEditable) {
+      return true;
+    }
+
+    const tag = target.tagName.toLowerCase();
+    return tag === 'input' || tag === 'textarea' || tag === 'select';
+  };
 
   const ensureViewportTracker = () => {
     if (viewportTracker) return viewportTracker;
@@ -88,10 +105,43 @@ export const createRuntimeController = (
     }
   };
 
+  const toggle = () => {
+    const { active } = store.getState();
+    if (active) {
+      stop();
+    } else {
+      start();
+    }
+  };
+
+  const handleHotkey = (event: KeyboardEvent) => {
+    if (!hotkeyBinding || !matchesHotkey(event, hotkeyBinding)) return;
+    if (isEditableTarget(event.target)) return;
+
+    event.preventDefault();
+    toggle();
+  };
+
+  const setupHotkeyListener = () => {
+    if (removeHotkeyListener) {
+      removeHotkeyListener();
+      removeHotkeyListener = null;
+    }
+
+    if (!hotkeyBinding) return;
+    if (typeof window === 'undefined' || typeof window.addEventListener !== 'function') return;
+
+    window.addEventListener('keydown', handleHotkey);
+    removeHotkeyListener = () => window.removeEventListener('keydown', handleHotkey);
+  };
+
+  
   const updateConfig = (patch: OverlayConfig) => {
     const nextConfig = normalizeOverlayConfig(patch);
     context.config = nextConfig;
     badgeContainer.updateConfig(nextConfig);
+    hotkeyBinding = parseHotkey(nextConfig.hotkey);
+    setupHotkeyListener();
 
     const snapshot = viewportTracker?.getSnapshot();
     if (snapshot) {
@@ -106,6 +156,7 @@ export const createRuntimeController = (
     badgeContainer,
     start,
     stop,
+    toggle,
     updateConfig,
   };
 };
@@ -116,14 +167,7 @@ export const createOverlayHandle = (config?: OverlayConfig): OverlayHandle => {
   return {
     start: runtime.start,
     stop: runtime.stop,
-    toggle: () => {
-      const { active } = runtime.store.getState();
-      if (active) {
-        runtime.stop();
-      } else {
-        runtime.start();
-      }
-    },
+    toggle: runtime.toggle,
     updateConfig: runtime.updateConfig,
     getState: runtime.store.getState,
     subscribe: runtime.store.subscribe,

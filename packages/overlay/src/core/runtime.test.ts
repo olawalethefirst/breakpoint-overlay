@@ -131,4 +131,78 @@ describe('createRuntimeController', () => {
     expect(tracker.stopped).toBe(true);
     expect(runtime.store.getState().active).toBe(false);
   });
+
+  it('toggles the overlay when the configured hotkey fires', () => {
+    const config: OverlayConfig = {
+      breakpoints: [{ id: 'base', minWidth: 0 }],
+    };
+
+    const { factory, tracker } = createMockTrackerFactory(
+      snapshot({ width: 1200 }),
+    );
+
+    const runtime = createRuntimeController(config, factory);
+
+    expect(runtime.store.getState().active).toBe(false);
+
+    const hotkeyEvent = new KeyboardEvent('keydown', {
+      altKey: true,
+      shiftKey: true,
+      key: 'O',
+      code: 'KeyO',
+    });
+    window.dispatchEvent(hotkeyEvent);
+
+    expect(runtime.store.getState().active).toBe(true);
+    expect(tracker.started).toBe(true);
+
+    const secondEvent = new KeyboardEvent('keydown', {
+      altKey: true,
+      shiftKey: true,
+      key: 'O',
+      code: 'KeyO',
+    });
+    window.dispatchEvent(secondEvent);
+
+    expect(runtime.store.getState().active).toBe(false);
+    expect(tracker.stopped).toBe(true);
+
+    runtime.updateConfig({ hotkey: '' });
+  });
+
+  it('ignores the hotkey when the active element is editable', () => {
+    const { factory } = createMockTrackerFactory(
+      snapshot({ width: 1024, height: 768 }),
+    );
+
+    const runtime = createRuntimeController(undefined, factory);
+    const input = document.createElement('input');
+    document.body.appendChild(input);
+    input.focus();
+
+    const ignoredEvent = new KeyboardEvent('keydown', {
+      altKey: true,
+      shiftKey: true,
+      key: 'O',
+      code: 'KeyO',
+      bubbles: true,
+    });
+    input.dispatchEvent(ignoredEvent);
+
+    expect(runtime.store.getState().active).toBe(false);
+
+    input.blur();
+    document.body.removeChild(input);
+
+    const hotkeyEvent = new KeyboardEvent('keydown', {
+      altKey: true,
+      shiftKey: true,
+      key: 'O',
+      code: 'KeyO',
+    });
+    window.dispatchEvent(hotkeyEvent);
+    expect(runtime.store.getState().active).toBe(true);
+
+    runtime.updateConfig({ hotkey: '' });
+  });
 });
