@@ -19,31 +19,9 @@ const overlay = initOverlay({
 
 ### `OverlayConfig`
 
-```ts
-interface BaseBreakpoint {
-  id: string;
-  label?: string;
-}
-
-interface MinWidthBreakpoint extends BaseBreakpoint {
-  minWidth: number;
-  maxWidth?: never;
-}
-
-interface MaxWidthBreakpoint extends BaseBreakpoint {
-  maxWidth: number;
-  minWidth?: never;
-}
-
-interface RangeBreakpoint extends BaseBreakpoint {
-  minWidth: number;
-  maxWidth: number;
-}
-```
-
 | Property        | Type                                                           | Default       | Description |
 |-----------------|----------------------------------------------------------------|---------------|-------------|
-| `breakpoints`   | `MinWidthBreakpoint[] \| MaxWidthBreakpoint[] \| RangeBreakpoint[]` | `[]`        | Author-supplied breakpoint definitions. Leave empty to defer configuration until a later `updateConfig` call. |
+| `breakpoints`   | `Array<{ id: string; label?: string } & ({ minWidth: number; maxWidth?: never } \| { maxWidth: number; minWidth?: never } \| { minWidth: number; maxWidth: number })>` | `[]`        | Author-supplied breakpoint definitions. Leave empty to defer configuration until a later `updateConfig` call. |
 | `matchStrategy` | `'min-width' \| 'max-width' \| 'range'`                        | _inferred_    | Forces a specific matching strategy; when omitted, each breakpoint is inferred individually. |
 | `hotkey`        | `string`                                                       | `alt+shift+o` | Keyboard shortcut in `modifier+...+key` form (e.g. `ctrl+shift+k`, `alt+o`). Supported modifiers: `alt`, `ctrl`, `shift`, `meta` (aliases `cmd`/`command`). The final token must be a single character. Matching is case-insensitive and also checks `event.code` for letters/digits, so layouts that emit `Ø` for `Alt+Shift+O` still work. Use an empty string (`""`) to disable the shortcut entirely. |
 | `debounceMs`    | `number`                                                       | `150`         | Debounce interval (ms) between viewport samples from the tracker. |
