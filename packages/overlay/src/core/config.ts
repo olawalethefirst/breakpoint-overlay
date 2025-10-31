@@ -2,7 +2,6 @@ import {
   CONFIG_SCHEMA_VERSION,
   DEFAULT_DEBOUNCE_MS,
   DEFAULT_HOTKEY,
-  DEFAULT_PERSIST_STATE,
   createDefaultBreakpoints,
 } from './defaults';
 import type {
