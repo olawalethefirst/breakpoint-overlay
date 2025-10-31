@@ -37,6 +37,14 @@ type BreakpointsForStrategy<S extends BreakpointMatchStrategy> =
  * allows the normaliser to infer strategies per breakpoint.
  */
 interface OverlayConfigBase {
+  /**
+   * Keyboard shortcut in `modifier+...+key` format (e.g. "alt+shift+o").
+   * The final token must be a single character. Matching is case-insensitive
+   * and also checks `event.code` for letters/digits so layouts that emit
+   * alternate glyphs (such as "Ø") still work. Supported modifiers: alt,
+   * ctrl, shift, meta (aliases cmd/command). Provide an empty string ("")
+   * to disable the shortcut entirely.
+   */
   hotkey?: string;
   debounceMs?: number;
 }
@@ -119,11 +127,26 @@ export interface OverlayStore {
 }
 
 export interface OverlayHandle {
+  /** Activate the overlay badge and begin viewport tracking. */
   start(): void;
+  /**
+   * Deactivate the overlay, collapse the badge, and stop viewport tracking.
+   * Safe to call multiple times.
+   */
   stop(): void;
+  /** Convenience helper that toggles between `start()` and `stop()`. */
   toggle(): void;
+  /**
+   * Merge new configuration into the runtime. Updating the `hotkey` here
+   * automatically rebinds the keyboard listener.
+   */
   updateConfig(patch: OverlayConfig): void;
+  /** Returns the latest runtime state snapshot. */
   getState(): RuntimeState;
+  /**
+   * Subscribe to state changes. Returns an unsubscribe function; listeners
+   * fire whenever `RuntimeState` updates.
+   */
   subscribe(listener: StateListener): () => void;
 }
 
