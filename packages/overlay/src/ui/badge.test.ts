@@ -191,4 +191,31 @@ describe('BadgeView', () => {
 
     view.unmount();
   });
+
+  it('remounts after being unmounted', () => {
+    const { view } = setupView();
+
+    view.mount(createProps());
+    view.unmount();
+    expect(mountPoint.firstElementChild).toBeNull();
+
+    view.mount(
+      createProps({
+        layout: { width: 1280, height: 720, devicePixelRatio: 2 },
+      })
+    );
+
+    const shadow = getShadowRoot();
+    const { label, viewport, dpr } = getHeaderReadout(shadow, {
+      label: 'Large',
+      viewport: '1280×720',
+      dpr: '2.0',
+    });
+
+    expect(label.textContent).toBe('Large');
+    expect(viewport.textContent).toBe('1280×720');
+    expect(dpr.textContent).toBe('2.0');
+
+    view.unmount();
+  });
 });
