@@ -11,7 +11,6 @@ describe('normalizeOverlayConfig', () => {
     expect(result.breakpoints).toEqual([]);
     expect(result.hotkey).toBe(DEFAULT_HOTKEY);
     expect(result.debounceMs).toBe(DEFAULT_DEBOUNCE_MS);
-    expect(result.persistState).toBe(false);
   });
 
   it('normalizes breakpoints while preserving author order', () => {

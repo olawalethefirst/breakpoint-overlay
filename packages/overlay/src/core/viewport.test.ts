@@ -12,45 +12,6 @@ const updateLayout = (layout: Partial<ViewportSnapshot>) => {
   }
 };
 
-const createResizeObserverAPI = () => {
-  let running = false;
-  let callback:
-    | ((entries: ResizeObserverEntry[], observer: ResizeObserver) => void)
-    | null = null;
-  let instance: MockResizeObserver | null = null;
-
-  class MockResizeObserver implements ResizeObserver {
-    constructor(cb: (entries: ResizeObserverEntry[], observer: ResizeObserver) => void) {
-      callback = cb;
-      instance = this;
-    }
-
-    observe(target: Element) {
-      if (target && !running) {
-        running = true;
-      }
-    }
-
-    unobserve() {
-      /* noop for tests */
-    }
-
-    disconnect() {
-      if (running) {
-        running = false;
-      }
-    }
-  }
-
-  const triggerLayoutUpdate = (applyLayout: () => void) => {
-    if (!running || !callback || !instance) return;
-    applyLayout();
-    callback([], instance);
-  };
-
-  return { ResizeObserver: MockResizeObserver, triggerLayoutUpdate };
-};
-
 const createAnimationFrameAPI = () => {
   let rafCallback: FrameRequestCallback | null = null;
   let rafId = 0;

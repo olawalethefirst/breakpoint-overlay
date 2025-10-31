@@ -25,7 +25,8 @@
     "typecheck": "tsc --noEmit",
     "types": "tsc -p tsconfig.build.json",
     "preview": "vite preview",
-    "test": "vitest"
+    "test": "vitest",
+    "prepack": "pnpm build"
   },
   "keywords": [
     "breakpoints",
@@ -34,7 +35,7 @@
     "debug"
   ],
   "author": {
-    "name": "Breakpoint Overlay Contributors"
+    "name": "Qudus Olawale Bashiru"
   },
   "license": "MIT",
   "devDependencies": {
