@@ -1,5 +1,18 @@
 # breakpoint-overlay
 
+## Installation
+
+```bash
+# npm
+npm install --save-dev breakpoint-overlay
+
+# pnpm
+pnpm add -D breakpoint-overlay
+
+# yarn
+yarn add -D breakpoint-overlay
+```
+
 ## Overlay API
 
 ### `initOverlay(config?)`
