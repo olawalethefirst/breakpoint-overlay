@@ -1,6 +1,6 @@
 {
   "name": "breakpoint-overlay",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Overlay utility for debugging responsive layouts in the browser",
   "type": "module",
   "private": false,
