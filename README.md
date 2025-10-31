@@ -19,6 +19,28 @@ const overlay = initOverlay({
 
 ### `OverlayConfig`
 
+```ts
+interface BaseBreakpoint {
+  id: string;
+  label?: string;
+}
+
+interface MinWidthBreakpoint extends BaseBreakpoint {
+  minWidth: number;
+  maxWidth?: never;
+}
+
+interface MaxWidthBreakpoint extends BaseBreakpoint {
+  maxWidth: number;
+  minWidth?: never;
+}
+
+interface RangeBreakpoint extends BaseBreakpoint {
+  minWidth: number;
+  maxWidth: number;
+}
+```
+
 | Property        | Type                                                           | Default       | Description |
 |-----------------|----------------------------------------------------------------|---------------|-------------|
 | `breakpoints`   | `MinWidthBreakpoint[] \| MaxWidthBreakpoint[] \| RangeBreakpoint[]` | `[]`        | Author-supplied breakpoint definitions. Leave empty to defer configuration until a later `updateConfig` call. |
@@ -43,25 +65,3 @@ const overlay = initOverlay({
 - Key events with editable targets (`input`, `textarea`, `select`, or `contenteditable` elements) are ignored to avoid injecting characters while the user types.
 - When the overlay handles the shortcut it calls `event.preventDefault()` but still leaves the event bubbling so other listeners can observe it.
 - Updating `config.hotkey` via `updateConfig` automatically tears down the previous listener and attaches the new binding.
-
-```ts
-interface BaseBreakpoint {
-  id: string;
-  label?: string;
-}
-
-interface MinWidthBreakpoint extends BaseBreakpoint {
-  minWidth: number;
-  maxWidth?: never;
-}
-
-interface MaxWidthBreakpoint extends BaseBreakpoint {
-  maxWidth: number;
-  minWidth?: never;
-}
-
-interface RangeBreakpoint extends BaseBreakpoint {
-  minWidth: number;
-  maxWidth: number;
-}
-```
