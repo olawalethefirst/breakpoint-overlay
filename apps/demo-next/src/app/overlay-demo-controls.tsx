@@ -32,34 +32,25 @@ const placeholderState: RuntimeState = {
 export function OverlayDemoControls() {
   const mounted = useRef(false);
   const overlayRef = useRef<OverlayHandle | null>(null);
-  const unsubscribeRef = useRef<(() => void) | null>(null);
   const [overlayState, setOverlayState] =
-    useState<RuntimeState>(placeholderState);
+  useState<RuntimeState>(placeholderState);
   const [config, setConfig] = useState(0);
-
-  const ensureOverlay = useCallback(() => {
-    if (!overlayRef.current) {
-      const handle = initOverlay(configs[config]);
-      overlayRef.current = handle;
-      unsubscribeRef.current = handle.subscribe((state) => {
-        setOverlayState(state);
-      });
-    }
-    return overlayRef.current;
-  }, [config]);
+  const configRef = useRef(config);
 
   const toggleOverlay = useCallback(() => {
-    const overlay = ensureOverlay();
-    if (!overlay) return;
-    overlay.toggle();
-  }, [ensureOverlay]);
+    overlayRef.current?.toggle();
+  }, []);
 
   useEffect(() => {
+    const handler = initOverlay(configs[configRef.current]);
+    const unsubscribe = handler.subscribe((state) => {
+      setOverlayState(state);
+    });
+    overlayRef.current = handler;
+
     return () => {
-      unsubscribeRef.current?.();
-      unsubscribeRef.current = null;
-      overlayRef.current?.stop();
-      overlayRef.current = null;
+      unsubscribe();
+      handler.destroy();
     };
   }, []);
   useEffect(() => {
