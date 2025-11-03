@@ -148,6 +148,8 @@ export interface OverlayHandle {
    * fire whenever `RuntimeState` updates.
    */
   subscribe(listener: StateListener): () => void;
+  /** Tear down DOM, listeners, and trackers. Safe to call repeatedly. */
+  destroy(): void;
 }
 
 /**

@@ -1,10 +1,10 @@
-import { resolveBreakpoint } from './breakpoints';
-import { normalizeOverlayConfig } from './config';
-import { parseHotkey, matchesHotkey } from './hotkey';
-import { createStore } from './state';
-import { BadgeContainer } from '../ui/badge-container';
-import type { ViewportTrackerFactory } from './viewport';
-import { createViewportTracker } from './viewport';
+import { resolveBreakpoint } from "./breakpoints";
+import { normalizeOverlayConfig } from "./config";
+import { parseHotkey, matchesHotkey } from "./hotkey";
+import { createStore } from "./state";
+import { BadgeContainer } from "../ui/badge-container";
+import type { ViewportTrackerFactory } from "./viewport";
+import { createViewportTracker } from "./viewport";
 import type {
   OverlayConfig,
   OverlayContext,
@@ -12,7 +12,7 @@ import type {
   OverlayStore,
   ResolvedOverlayConfig,
   ViewportSnapshot,
-} from './types';
+} from "./types";
 
 interface RuntimeController {
   store: OverlayStore;
@@ -23,12 +23,13 @@ interface RuntimeController {
   stop(): void;
   toggle(): void;
   updateConfig(config: OverlayConfig): void;
+  destroy(): void;
 }
 
 const updateRuntimeState = (
   store: OverlayStore,
   config: ResolvedOverlayConfig,
-  snapshot: ViewportSnapshot,
+  snapshot: ViewportSnapshot
 ) => {
   const breakpoint = resolveBreakpoint(snapshot, config.breakpoints);
   store.setState((state) => ({
@@ -40,7 +41,7 @@ const updateRuntimeState = (
 
 export const createRuntimeController = (
   config?: OverlayConfig,
-  trackerFactory: ViewportTrackerFactory = createViewportTracker,
+  trackerFactory: ViewportTrackerFactory = createViewportTracker
 ): RuntimeController => {
   const resolvedConfig = normalizeOverlayConfig(config);
   const store = createStore();
@@ -65,7 +66,7 @@ export const createRuntimeController = (
     }
 
     const tag = target.tagName.toLowerCase();
-    return tag === 'input' || tag === 'textarea' || tag === 'select';
+    return tag === "input" || tag === "textarea" || tag === "select";
   };
 
   const ensureViewportTracker = () => {
@@ -97,7 +98,7 @@ export const createRuntimeController = (
               expanded: false,
             },
           }
-        : prev,
+        : prev
     );
 
     if (viewportTracker) {
@@ -129,13 +130,17 @@ export const createRuntimeController = (
     }
 
     if (!hotkeyBinding) return;
-    if (typeof window === 'undefined' || typeof window.addEventListener !== 'function') return;
+    if (
+      typeof window === "undefined" ||
+      typeof window.addEventListener !== "function"
+    )
+      return;
 
-    window.addEventListener('keydown', handleHotkey);
-    removeHotkeyListener = () => window.removeEventListener('keydown', handleHotkey);
+    window.addEventListener("keydown", handleHotkey);
+    removeHotkeyListener = () =>
+      window.removeEventListener("keydown", handleHotkey);
   };
 
-  
   const updateConfig = (patch: OverlayConfig) => {
     const nextConfig = normalizeOverlayConfig(patch);
     context.config = nextConfig;
@@ -149,6 +154,26 @@ export const createRuntimeController = (
     }
   };
 
+  const destroy = () => {
+    stop();
+
+    if (removeHotkeyListener) {
+      removeHotkeyListener();
+      removeHotkeyListener = null;
+    }
+
+    badgeContainer.destroy();
+
+    if (viewportTracker) {
+      viewportTracker.stop();
+      viewportTracker = null;
+    }
+
+    hotkeyBinding = null;
+  };
+
+  setupHotkeyListener();
+
   return {
     store,
     context,
@@ -158,6 +183,7 @@ export const createRuntimeController = (
     stop,
     toggle,
     updateConfig,
+    destroy,
   };
 };
 
@@ -171,5 +197,6 @@ export const createOverlayHandle = (config?: OverlayConfig): OverlayHandle => {
     updateConfig: runtime.updateConfig,
     getState: runtime.store.getState,
     subscribe: runtime.store.subscribe,
+    destroy: runtime.destroy,
   };
 };
