@@ -17,7 +17,7 @@ yarn add -D breakpoint-overlay
 
 ### `initOverlay(config?)`
 
-Creates the overlay runtime and returns an `OverlayHandle`. Call this once early in your app lifecycle—keyboard shortcuts only start working after `initOverlay` runs so the listener can register.
+Creates the overlay runtime and returns an `OverlayHandle`. Call this once early in your app lifecycle—keyboard shortcuts only start working after `initOverlay` runs so the listener can register. Repeated calls automatically destroy the previous instance before creating a new one.
 
 ```ts
 import { initOverlay } from '@breakpoint-overlay';
@@ -46,6 +46,7 @@ const overlay = initOverlay({
 - `start()` – Activate the overlay badge and begin viewport tracking.
 - `stop()` – Deactivate the overlay and reset the badge’s expanded state.
 - `toggle()` – Convenience wrapper that switches between `start()` and `stop()`.
+- `destroy()` – Fully tear down the overlay: removes keyboard listeners, stops tracking, and unmounts the badge.
 - `updateConfig(patch)` – Merge new configuration; updates listeners and recomputes state when properties like `hotkey` or `breakpoints` change.
 - `getState()` – Returns the current runtime `RuntimeState`.
 - `subscribe(listener)` – Registers a store subscriber; returns an unsubscribe function.
