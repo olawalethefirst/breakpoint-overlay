@@ -3,6 +3,13 @@ import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import { createViewportTracker } from './viewport';
 import type { ViewportSnapshot } from './types';
 
+type RafCallback = (time: number) => void;
+
+const triggerRaf = (cb: RafCallback | null) => {
+  if (!cb) return;
+  cb(0);
+};
+
 const updateLayout = (layout: Partial<ViewportSnapshot>) => {
   if (typeof window === 'undefined') return;
   if (layout.width != null) window.innerWidth = layout.width;
@@ -13,10 +20,10 @@ const updateLayout = (layout: Partial<ViewportSnapshot>) => {
 };
 
 const createAnimationFrameAPI = () => {
-  let rafCallback: FrameRequestCallback | null = null;
+  let rafCallback: RafCallback | null = null;
   let rafId = 0;
 
-  const requestAnimationFrame: typeof window.requestAnimationFrame = (cb) => {
+  const requestAnimationFrame = (cb: RafCallback) => {
     rafCallback = cb;
     return ++rafId;
   };
@@ -29,7 +36,7 @@ const createAnimationFrameAPI = () => {
     if (rafCallback) {
       const cb = rafCallback;
       rafCallback = null;
-      cb(0);
+      triggerRaf(cb);
     }
   };
 
@@ -140,5 +147,60 @@ describe('createViewportTracker - browser behaviour', () => {
     window.dispatchEvent(new Event("resize"));
     raf.triggerAnimationFrame();
     expect(listener).toHaveBeenCalledTimes(2);
+  });
+
+  it("cancels pending animation frame when rescheduling or stopping", () => {
+    if (typeof window === "undefined") {
+      return;
+    }
+    delete (globalThis as any).ResizeObserver;
+
+    let rafCallback: RafCallback | null = null;
+    let rafId = 0;
+    const cancelSpy = vi.fn();
+
+    window.requestAnimationFrame = (cb: RafCallback) => {
+      rafCallback = cb;
+      rafId += 1;
+      return rafId;
+    };
+    window.cancelAnimationFrame = (id) => {
+      cancelSpy(id);
+      rafCallback = null;
+    };
+
+    updateLayout({ width: 640, height: 480, devicePixelRatio: 1 });
+
+    const listener = vi.fn();
+    const tracker = createViewportTracker(listener);
+    tracker.start();
+
+    updateLayout({ width: 700 });
+    window.dispatchEvent(new Event("resize"));
+    updateLayout({ width: 720 });
+    window.dispatchEvent(new Event("resize"));
+
+    expect(cancelSpy).toHaveBeenCalledTimes(1);
+    expect(cancelSpy).toHaveBeenCalledWith(1);
+
+    if (rafCallback) {
+      const cb: RafCallback = rafCallback;
+      rafCallback = null;
+      cb(0);
+    }
+
+    expect(listener).toHaveBeenCalledTimes(2);
+    expect(listener).toHaveBeenLastCalledWith({
+      width: 720,
+      height: 480,
+      devicePixelRatio: 1,
+    });
+
+    updateLayout({ width: 760 });
+    window.dispatchEvent(new Event("resize"));
+    tracker.stop();
+
+    expect(cancelSpy).toHaveBeenCalledTimes(2);
+    expect(cancelSpy).toHaveBeenLastCalledWith(3);
   });
 });

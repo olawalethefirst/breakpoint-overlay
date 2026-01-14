@@ -1,8 +1,22 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --page-bg: radial-gradient(circle at top, #f9e2c6, #f6f1e9 45%, #e2edf5 100%);
+  --page-heading: #0f172a;
+  --page-text: #475569;
+  --page-muted: #64748b;
+  --card-bg: rgba(255, 255, 255, 0.85);
+  --card-border: rgba(255, 255, 255, 0.6);
+  --card-shadow: 0 20px 60px rgba(15, 23, 42, 0.12);
+  --card-text: #0f172a;
+  --card-muted: #64748b;
+  --card-panel-bg: rgba(248, 250, 252, 0.9);
+  --card-panel-border: rgba(148, 163, 184, 0.35);
+  --input-bg: rgba(248, 250, 252, 0.95);
+  --input-border: rgba(148, 163, 184, 0.45);
+  --input-text: #0f172a;
 }
 
 @theme inline {
@@ -12,15 +26,32 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+[data-theme="dark"] {
+  --background: #0b1220;
+  --foreground: #e2e8f0;
+  --page-bg: radial-gradient(circle at top, #0f172a, #0b1220 55%, #0a0f1a 100%);
+  --page-heading: #f8fafc;
+  --page-text: #cbd5f5;
+  --page-muted: #94a3b8;
+  --card-bg: rgba(15, 23, 42, 0.85);
+  --card-border: rgba(148, 163, 184, 0.25);
+  --card-shadow: 0 20px 60px rgba(2, 6, 23, 0.45);
+  --card-text: #e2e8f0;
+  --card-muted: #94a3b8;
+  --card-panel-bg: rgba(15, 23, 42, 0.6);
+  --card-panel-border: rgba(148, 163, 184, 0.25);
+  --input-bg: rgba(15, 23, 42, 0.9);
+  --input-border: rgba(148, 163, 184, 0.35);
+  --input-text: #e2e8f0;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+.page-shell {
+  background: var(--page-bg);
+  color: var(--page-heading);
 }
