@@ -18,6 +18,6 @@ This example lives inside the monorepo so it can link against the local `breakpo
    ```
 3. Start the demo app with Turbopack:
    ```bash
-   pnpm --filter demo-next dev
+   pnpm --filter bookmarklet dev
    ```
 4. Visit [http://localhost:3000](http://localhost:3000), click **Start overlay**, and resize the viewport (or use devtools emulation) to watch the badge update.
