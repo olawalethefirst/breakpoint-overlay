@@ -4,6 +4,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { OverlayHandle, RuntimeState } from "breakpoint-overlay";
 import { initOverlay } from "breakpoint-overlay";
 
+import { Button } from "@/components/ui/button";
+
 const configs = [
   {
     breakpoints: [
@@ -70,55 +72,59 @@ export function OverlayDemoControls() {
   const dpr = overlayState.viewport.devicePixelRatio.toFixed(1);
 
   return (
-    <section className="w-full max-w-xl rounded-2xl border border-zinc-800/60 bg-zinc-900/40 p-6 text-zinc-100 shadow-lg backdrop-blur">
-      <header className="mb-4 flex items-center justify-between gap-4 flex-wrap">
+    <section className="w-full max-w-xl rounded-3xl border border-[var(--card-border)] bg-[var(--card-bg)] p-6 text-[var(--card-text)] shadow-[var(--card-shadow)] backdrop-blur">
+      <header className="mb-4 flex flex-wrap items-center justify-between gap-4">
         <div>
           <h2 className="text-lg font-semibold">Breakpoint Overlay</h2>
-          <p className="text-sm text-zinc-400">
+          <p className="text-sm text-[var(--card-muted)]">
             Toggle the overlay badge and verify the active breakpoint readout
             during manual testing.
           </p>
         </div>
-        <button
-          type="button"
+        <Button
           onClick={toggleOverlay}
-          className="rounded-full bg-emerald-500 border-[1] border-emerald-500 px-4 py-2 text-sm font-semibold text-emerald-950 shadow hover:bg-emerald-400"
+          variant="primary"
+          size="sm"
         >
           Toggle Overlay
-        </button>
-        <button
-          type="button"
+        </Button>
+        <Button
           onClick={() => setConfig((config) => (config + 1) % 2)}
-          className="rounded-full border-[1] border-emerald-500  text-emerald-500 px-4 py-2 text-sm font-semibold  shadow hover:border-emerald-400 hover:text-emerald-400"
+          variant="secondary"
+          size="sm"
         >
           Toggle Config
-        </button>
+        </Button>
       </header>
 
       <div className="grid gap-3 text-sm">
-        <div className="rounded-lg border border-zinc-800/70 bg-zinc-900/60 p-3">
-          <h3 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+        <div className="rounded-lg border border-[var(--card-panel-border)] bg-[var(--card-panel-bg)] p-3">
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-[var(--card-muted)]">
             Current State
           </h3>
           <dl className="mt-2 grid grid-cols-2 gap-y-2 text-sm">
-            <dt className="text-zinc-500">Active</dt>
-            <dd className="font-medium text-zinc-200">
+            <dt className="text-[var(--card-muted)]">Active</dt>
+            <dd className="font-medium text-[var(--card-text)]">
               {overlayState.active ? "Yes" : "No"}
             </dd>
-            <dt className="text-zinc-500">Breakpoint</dt>
-            <dd className="font-medium text-zinc-200">{breakpointLabel}</dd>
-            <dt className="text-zinc-500">Viewport</dt>
-            <dd className="font-medium text-zinc-200">{viewportSummary}</dd>
-            <dt className="text-zinc-500">Device Pixel Ratio</dt>
-            <dd className="font-medium text-zinc-200">{dpr}</dd>
+            <dt className="text-[var(--card-muted)]">Breakpoint</dt>
+            <dd className="font-medium text-[var(--card-text)]">
+              {breakpointLabel}
+            </dd>
+            <dt className="text-[var(--card-muted)]">Viewport</dt>
+            <dd className="font-medium text-[var(--card-text)]">
+              {viewportSummary}
+            </dd>
+            <dt className="text-[var(--card-muted)]">Device Pixel Ratio</dt>
+            <dd className="font-medium text-[var(--card-text)]">{dpr}</dd>
           </dl>
         </div>
 
-        <div className="rounded-lg border border-zinc-800/70 bg-zinc-900/60 p-3">
-          <h3 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+        <div className="rounded-lg border border-[var(--card-panel-border)] bg-[var(--card-panel-bg)] p-3">
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-[var(--card-muted)]">
             Demo Breakpoints
           </h3>
-          <ul className="mt-2 space-y-1 text-sm text-zinc-300">
+          <ul className="mt-2 space-y-1 text-sm text-[var(--card-muted)]">
             {configs[config].breakpoints.map((bp) => {
               let range = "All widths";
               if (bp.minWidth != null && bp.maxWidth != null) {
@@ -134,10 +140,11 @@ export function OverlayDemoControls() {
                 <li
                   key={bp.id}
                   className={
-                    isActive ? "font-semibold text-emerald-400" : undefined
+                    isActive ? "font-semibold text-[var(--card-text)]" : undefined
                   }
                 >
-                  {bp.label} · <span className="text-zinc-500">{range}</span>
+                  {bp.label} ·{" "}
+                  <span className="text-[var(--card-muted)]">{range}</span>
                 </li>
               );
             })}
@@ -146,7 +153,7 @@ export function OverlayDemoControls() {
       </div>
 
       {overlayState.active && (
-        <p className="mt-4 text-xs text-zinc-500">
+        <p className="mt-4 text-xs text-[var(--card-muted)]">
           Hint: resize the viewport or use the device toolbar to see the badge
           update in real time.
         </p>
