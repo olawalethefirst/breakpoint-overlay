@@ -1,5 +1,9 @@
 # breakpoint-overlay
 
+Lightweight breakpoint badge for quickly seeing which responsive range is active in the browser.
+
+[Project overview](../../README.md) (back to the repo overview)
+
 ## Installation
 
 ```bash
@@ -13,11 +17,7 @@ pnpm add -D breakpoint-overlay
 yarn add -D breakpoint-overlay
 ```
 
-## Overlay API
-
-### `initOverlay(config?)`
-
-Creates the overlay runtime and returns an `OverlayHandle`. Call this once early in your app lifecycle—keyboard shortcuts only start working after `initOverlay` runs so the listener can register. Repeated calls automatically destroy the previous instance before creating a new one.
+## Quick start
 
 ```ts
 import { initOverlay } from '@breakpoint-overlay';
@@ -29,6 +29,12 @@ const overlay = initOverlay({
   ],
 });
 ```
+
+## API reference
+
+### `initOverlay(config?)`
+
+Creates the overlay runtime and returns an `OverlayHandle`. Call this once early in your app lifecycle—keyboard shortcuts only start working after `initOverlay` runs so the listener can register. Repeated calls automatically destroy the previous instance before creating a new one.
 
 ### `OverlayConfig`
 
@@ -57,3 +63,48 @@ const overlay = initOverlay({
 - Key events with editable targets (`input`, `textarea`, `select`, or `contenteditable` elements) are ignored to avoid injecting characters while the user types.
 - When the overlay handles the shortcut it calls `event.preventDefault()` but still leaves the event bubbling so other listeners can observe it.
 - Updating `config.hotkey` via `updateConfig` automatically tears down the previous listener and attaches the new binding.
+
+## Usage patterns
+
+- Initialize once near app startup; the hotkey only works after `initOverlay` runs.
+- Call `overlay.toggle()` from your own UI if you do not want to use the hotkey.
+- Disable the hotkey by setting `hotkey: ""`.
+
+## Config examples
+
+### Min-width breakpoints
+
+```ts
+initOverlay({
+  breakpoints: [
+    { id: 'sm', label: 'Small', minWidth: 640 },
+    { id: 'lg', label: 'Large', minWidth: 1024 },
+  ],
+});
+```
+
+### Max-width breakpoints
+
+```ts
+initOverlay({
+  breakpoints: [
+    { id: 'mobile', label: 'Mobile', maxWidth: 767 },
+    { id: 'tablet', label: 'Tablet', maxWidth: 1023 },
+  ],
+});
+```
+
+### Range breakpoints
+
+```ts
+initOverlay({
+  breakpoints: [
+    { id: 'tablet', label: 'Tablet', minWidth: 768, maxWidth: 1023 },
+  ],
+});
+```
+
+## Troubleshooting
+
+- Shortcut does nothing: verify `initOverlay` has run and `hotkey` is not an empty string.
+- Shortcut ignored while typing: inputs and editable elements are excluded by design.
